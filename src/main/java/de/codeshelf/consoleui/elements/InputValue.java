@@ -1,5 +1,6 @@
 package de.codeshelf.consoleui.elements;
 
+import de.codeshelf.consoleui.elements.validation.InputValueValidator;
 import jline.console.completer.Completer;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ public class InputValue extends AbstractPromptableElement {
   private String defaultValue;
   private List<Completer> completer;
   private Character mask;
+  private InputValueValidator validator;
 
   public InputValue(String name, String message) {
     super(message, name);
@@ -23,9 +25,7 @@ public class InputValue extends AbstractPromptableElement {
 
   public InputValue(String name, String message, String value, String defaultValue) {
     super(message, name);
-    //this.value = value;
-    if (value!=null)
-      throw new IllegalStateException("pre filled values for InputValue are not supported at the moment.");
+    this.value = value;
     this.defaultValue = defaultValue;
   }
 
@@ -58,5 +58,13 @@ public class InputValue extends AbstractPromptableElement {
 
   public Character getMask() {
     return mask;
+  }
+
+  public void setValidator(InputValueValidator validator) {
+    this.validator = validator;
+  }
+
+  public InputValueValidator getValidator() {
+    return validator;
   }
 }

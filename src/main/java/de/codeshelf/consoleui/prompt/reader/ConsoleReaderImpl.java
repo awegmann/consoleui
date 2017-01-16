@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import static org.fusesource.jansi.Ansi.ansi;
+
 /**
  * User: Andreas Wegmann
  * Date: 02.01.16
@@ -96,18 +98,32 @@ public class ConsoleReaderImpl implements ReaderIF {
    * @return a ReaderInput object with results
    */
   public ReaderInput readLine(List<Completer> completer, String prompt, String value, Character mask) throws IOException {
+    // initialize the completers if there are any...
     if (completer != null) {
       for (Completer c : completer) {
         console.addCompleter(c);
       }
     }
+
+    // preload value if it's not NULL
+    if (value != null) {
+      console.resetPromptLine(prompt, value, 0);
+      console.print("\r");
+      try {
+        Thread.sleep(2000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      //console.resetPromptLine(prompt, value, -1);
+    }
+
+    // read line (with mask if mask is not NULL)
     String readLine;
     if (mask == null) {
       readLine = console.readLine(prompt);
     } else {
       readLine = console.readLine(prompt, mask);
     }
-
 
     return new ReaderInput(SpecialKey.PRINTABLE_KEY, readLine);
   }

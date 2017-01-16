@@ -19,7 +19,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 compileJava {
@@ -29,26 +29,26 @@ compileJava {
 
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '2.11'
+  gradleVersion = '3.3'
 }
 
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-    compile 'org.fusesource.jansi:jansi:1.11'
-    compile 'jline:jline:2.12'
+  testCompile group: 'junit', name: 'junit', version: '4.11'
+  compile 'org.fusesource.jansi:jansi:1.11'
+  compile 'jline:jline:2.12'
+  compile 'commons-validator:commons-validator:1.5.1'
 }
 
 task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
+  classifier = 'javadoc'
+  from javadoc
 }
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+  classifier = 'sources'
+  from sourceSets.main.allSource
 }
-
 
 // Fat-jar
 task fatJar(type: Jar, dependsOn: [':compileJava', ':processResources']) {
@@ -57,19 +57,19 @@ task fatJar(type: Jar, dependsOn: [':compileJava', ':processResources']) {
   from files(sourceSets.main.resources)
   baseName = project.name + '-all'
   manifest {
-      attributes 'Implementation-Title': 'ConsoleUI',
-                 'Implementation-Version': version,
-                 'Main-Class': 'de.codeshelf.consoleui.Basic'
+    attributes 'Implementation-Title': 'ConsoleUI',
+            'Implementation-Version': version,
+            'Main-Class': 'de.codeshelf.consoleui.BasicInput'
 
-    }
+  }
 }
 
 task printEnv {
-  println "username "+sonatypeUsername
+  println "username " + sonatypeUsername
 }
 
 artifacts {
-    archives javadocJar, sourcesJar
+  archives javadocJar, sourcesJar
 }
 
 

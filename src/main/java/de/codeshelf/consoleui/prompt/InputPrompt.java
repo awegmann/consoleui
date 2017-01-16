@@ -1,10 +1,12 @@
 package de.codeshelf.consoleui.prompt;
 
 import de.codeshelf.consoleui.elements.InputValue;
+import de.codeshelf.consoleui.elements.validation.InputValueValidator;
 import de.codeshelf.consoleui.prompt.reader.ConsoleReaderImpl;
 import de.codeshelf.consoleui.prompt.reader.ReaderIF;
 import de.codeshelf.consoleui.prompt.renderer.CUIRenderer;
 import jline.console.completer.Completer;
+import org.fusesource.jansi.Ansi;
 
 import java.io.IOException;
 import java.util.LinkedHashSet;
@@ -20,12 +22,17 @@ import static org.fusesource.jansi.Ansi.ansi;
  * User: Andreas Wegmann<p>
  * Date: 06.01.16
  */
-public class InputPrompt extends AbstractPrompt implements PromptIF<InputValue,InputResult> {
+public class InputPrompt extends AbstractPrompt implements PromptIF<InputValue, InputResult> {
 
   private InputValue inputElement;
   private ReaderIF reader;
   CUIRenderer itemRenderer = CUIRenderer.getRenderer();
 
+  /**
+   * Default constructor.
+   *
+   * @throws IOException
+   */
   public InputPrompt() throws IOException {
   }
 
@@ -44,13 +51,31 @@ public class InputPrompt extends AbstractPrompt implements PromptIF<InputValue,I
     }
 
     String prompt = renderMessagePrompt(this.inputElement.getMessage()) + itemRenderer.renderOptionalDefaultValue(this.inputElement);
+
+
     //System.out.print(prompt + itemRenderer.renderValue(this.inputElement));
     //System.out.flush();
     List<Completer> completer = inputElement.getCompleter();
     Character mask = inputElement.getMask();
-    ReaderIF.ReaderInput readerInput = reader.readLine(completer,prompt,inputElement.getValue(),mask);
+    boolean valid = false;
+    String lineInput = inputElement.getValue();
+    do {
+      ReaderIF.ReaderInput readerInput = reader.readLine(completer, prompt, lineInput, mask);
 
-    String lineInput = readerInput.getLineInput();
+      lineInput = readerInput.getLineInput();
+
+      if (inputElement.getValidator() != null) {
+        if (lineInput != null && lineInput.trim().length() > 0) {
+          valid = inputElement.getValidator().isValid(lineInput);
+          if (!valid) {
+            renderErrorMessage(inputElement.getValidator().getErrorMessage());
+          }
+        }
+      } else {
+        valid = true;
+      }
+    } while (!valid);
+
 
     if (lineInput == null || lineInput.trim().length() == 0) {
       lineInput = inputElement.getDefaultValue();
@@ -58,12 +83,12 @@ public class InputPrompt extends AbstractPrompt implements PromptIF<InputValue,I
 
     String result;
     if (mask == null) {
-      result=lineInput;
+      result = lineInput;
     } else {
-      result="";
-      if (lineInput!=null) {
-        for (int i=0; i<lineInput.length(); i++) {
-          result+=mask;
+      result = "";
+      if (lineInput != null) {
+        for (int i = 0; i < lineInput.length(); i++) {
+          result += mask;
         }
       }
     }
@@ -71,5 +96,12 @@ public class InputPrompt extends AbstractPrompt implements PromptIF<InputValue,I
     renderMessagePromptAndResult(inputElement.getMessage(), result);
 
     return new InputResult(lineInput);
+  }
+
+  private void renderErrorMessage(String errorMessage) {
+    System.out.print(ansi().fg(Ansi.Color.RED).a("!!>  ").reset().a(errorMessage).eraseLine().cursorLeft(Integer.MAX_VALUE));
+    System.out.print(ansi().cursorUp(1));
+    System.out.flush();
+    renderHeight = 1;
   }
 }

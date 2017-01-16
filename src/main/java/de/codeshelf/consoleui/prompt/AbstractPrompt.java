@@ -15,6 +15,9 @@ import static org.fusesource.jansi.Ansi.ansi;
  * Date: 06.01.16
  */
 public abstract class AbstractPrompt {
+  /**
+   * The number of lines the cursor has to move up to go to the first line of the current prompt.
+   */
   protected int renderHeight;
   protected ResourceBundle resourceBundle;
 
