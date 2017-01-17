@@ -1,7 +1,7 @@
 package de.codeshelf.consoleui.prompt.builder;
 
 import de.codeshelf.consoleui.elements.InputValue;
-import jline.console.completer.Completer;
+import org.jline.reader.Completer;
 
 import java.util.ArrayList;
 

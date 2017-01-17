@@ -4,10 +4,9 @@ import de.codeshelf.consoleui.elements.InputValue;
 import de.codeshelf.consoleui.prompt.reader.ConsoleReaderImpl;
 import de.codeshelf.consoleui.prompt.reader.ReaderIF;
 import de.codeshelf.consoleui.prompt.renderer.CUIRenderer;
-import jline.console.completer.Completer;
+import org.jline.reader.Completer;
 
 import java.io.IOException;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import static org.fusesource.jansi.Ansi.ansi;

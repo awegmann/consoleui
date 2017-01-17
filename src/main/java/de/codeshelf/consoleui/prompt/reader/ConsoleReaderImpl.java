@@ -1,8 +1,13 @@
 package de.codeshelf.consoleui.prompt.reader;
 
-import jline.console.ConsoleReader;
-import jline.console.Operation;
-import jline.console.completer.Completer;
+import org.jline.keymap.KeyMap;
+import org.jline.reader.Binding;
+import org.jline.reader.Completer;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.impl.LineReaderImpl;
+import org.jline.terminal.Terminal;
+import org.jline.utils.DiffHelper;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -15,7 +20,7 @@ import java.util.Stack;
  * Date: 02.01.16
  */
 public class ConsoleReaderImpl implements ReaderIF {
-  ConsoleReader console;
+  LineReaderImpl console;
 
   private Set<SpecialKey> allowedSpecialKeys;
   private Set<Character> allowedPrintableKeys;
@@ -24,7 +29,10 @@ public class ConsoleReaderImpl implements ReaderIF {
     allowedPrintableKeys = new HashSet<Character>();
     allowedSpecialKeys = new HashSet<SpecialKey>();
 
-    console = new ConsoleReader();
+    //console = new LineReader();
+
+    LineReader lineReader = LineReaderBuilder.builder()
+            .build();
   }
 
   public void setAllowedSpecialKeys(Set<SpecialKey> allowedSpecialKeys) {
@@ -52,25 +60,28 @@ public class ConsoleReaderImpl implements ReaderIF {
     Stack<Character> pushBackChar = new Stack<Character>();
     try {
       while (true) {
+        /*
         int c = pushBackChar.isEmpty() ? console.readCharacter() : pushBackChar.pop ();
         if (c == -1) {
             return null;
         }
         sb.appendCodePoint(c);
-
-        op = console.getKeys().getBound( sb );
-        if (op instanceof Operation) {
-          Operation operation = (Operation) op;
-          if (operation == Operation.NEXT_HISTORY && this.allowedSpecialKeys.contains(SpecialKey.DOWN))
+        */
+        KeyMap<Binding> keys= new KeyMap<Binding>();
+        Binding binding = console.readBinding(keys);
+        //op = console.getKeys().getBound( sb );
+        if (binding instanceof Binding) {
+          DiffHelper.Operation operation = (DiffHelper.Operation) op;
+          if ((binding == LineReader.UP_HISTORY) && this.allowedSpecialKeys.contains(SpecialKey.DOWN))
             return new ReaderInput(SpecialKey.DOWN);
-          if (operation == Operation.PREVIOUS_HISTORY && this.allowedSpecialKeys.contains(SpecialKey.UP))
+          if (operation == LineReader.DOWN_HISTORY && this.allowedSpecialKeys.contains(SpecialKey.UP))
             return new ReaderInput(SpecialKey.UP);
-          if (operation == Operation.ACCEPT_LINE && this.allowedSpecialKeys.contains(SpecialKey.ENTER))
+          if (operation == LineReader.ACCEPT_LINE && this.allowedSpecialKeys.contains(SpecialKey.ENTER))
             return new ReaderInput(SpecialKey.ENTER);
-          if (operation == Operation.BACKWARD_CHAR && this.allowedSpecialKeys.contains(SpecialKey.BACKSPACE))
+          if (operation == LineReader.BACKWARD_CHAR && this.allowedSpecialKeys.contains(SpecialKey.BACKSPACE))
             return new ReaderInput(SpecialKey.BACKSPACE);
 
-          if (operation == Operation.SELF_INSERT) {
+          if (operation == LineReader.SELF_INSERT) {
             String lastBinding = sb.toString();
             Character cc = lastBinding.charAt(0);
             if (allowedPrintableKeys.contains(cc)) {
@@ -98,7 +109,7 @@ public class ConsoleReaderImpl implements ReaderIF {
   public ReaderInput readLine(List<Completer> completer, String prompt, String value, Character mask) throws IOException {
     if (completer != null) {
       for (Completer c : completer) {
-        console.addCompleter(c);
+        console.setCompleter(c);
       }
     }
     String readLine;

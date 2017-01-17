@@ -1,6 +1,7 @@
 package de.codeshelf.consoleui.prompt.reader;
 
-import jline.console.completer.Completer;
+
+import org.jline.reader.Completer;
 
 import java.io.IOException;
 import java.util.List;
