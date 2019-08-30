@@ -5,9 +5,8 @@ import de.codeshelf.consoleui.prompt.ConfirmResult;
 import de.codeshelf.consoleui.prompt.ConsolePrompt;
 import de.codeshelf.consoleui.prompt.PromtResultItemIF;
 import de.codeshelf.consoleui.prompt.builder.PromptBuilder;
-import jline.TerminalFactory;
-import jline.console.completer.StringsCompleter;
 import org.fusesource.jansi.AnsiConsole;
+import org.jline.reader.impl.completer.StringsCompleter;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -99,7 +98,7 @@ public class Basic {
       e.printStackTrace();
     } finally {
       try {
-        TerminalFactory.get().restore();
+        //TerminalFactory.getDefault().restore();
       } catch (Exception e) {
         e.printStackTrace();
       }

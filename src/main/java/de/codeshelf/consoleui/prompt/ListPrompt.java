@@ -4,7 +4,7 @@ import de.codeshelf.consoleui.elements.ListChoice;
 import de.codeshelf.consoleui.elements.items.ConsoleUIItemIF;
 import de.codeshelf.consoleui.elements.items.impl.ListItem;
 import de.codeshelf.consoleui.prompt.reader.ConsoleReaderImpl;
-import de.codeshelf.consoleui.prompt.reader.ReaderIF;
+import de.codeshelf.consoleui.prompt.reader.Reader;
 import de.codeshelf.consoleui.prompt.renderer.CUIRenderer;
 
 import java.io.IOException;
@@ -53,24 +53,24 @@ public class ListPrompt extends AbstractListablePrompt implements PromptIF<ListC
     reader.addAllowedPrintableKey('j');
     reader.addAllowedPrintableKey('k');
     reader.addAllowedPrintableKey(' ');
-    reader.addAllowedSpecialKey(ReaderIF.SpecialKey.DOWN);
-    reader.addAllowedSpecialKey(ReaderIF.SpecialKey.UP);
-    reader.addAllowedSpecialKey(ReaderIF.SpecialKey.ENTER);
+    reader.addAllowedSpecialKey(Reader.SpecialKey.DOWN);
+    reader.addAllowedSpecialKey(Reader.SpecialKey.UP);
+    reader.addAllowedSpecialKey(Reader.SpecialKey.ENTER);
 
     selectedItemIndex = getFirstSelectableItemIndex();
 
     render();
-    ReaderIF.ReaderInput readerInput = reader.read();
-    while (readerInput.getSpecialKey() != ReaderIF.SpecialKey.ENTER) {
-      if (readerInput.getSpecialKey() == ReaderIF.SpecialKey.PRINTABLE_KEY) {
+    Reader.ReaderInput readerInput = reader.read();
+    while (readerInput.getSpecialKey() != Reader.SpecialKey.ENTER) {
+      if (readerInput.getSpecialKey() == Reader.SpecialKey.PRINTABLE_KEY) {
         if (readerInput.getPrintableKey().equals('j')) {
           selectedItemIndex = getNextSelectableItemIndex();
         } else if (readerInput.getPrintableKey().equals('k')) {
           selectedItemIndex = getPreviousSelectableItemIndex();
         }
-      } else if (readerInput.getSpecialKey() == ReaderIF.SpecialKey.DOWN) {
+      } else if (readerInput.getSpecialKey() == Reader.SpecialKey.DOWN) {
         selectedItemIndex = getNextSelectableItemIndex();
-      } else if (readerInput.getSpecialKey() == ReaderIF.SpecialKey.UP) {
+      } else if (readerInput.getSpecialKey() == Reader.SpecialKey.UP) {
         selectedItemIndex = getPreviousSelectableItemIndex();
       }
 

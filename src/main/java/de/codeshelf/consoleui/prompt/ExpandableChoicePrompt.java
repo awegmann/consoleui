@@ -3,7 +3,7 @@ package de.codeshelf.consoleui.prompt;
 import de.codeshelf.consoleui.elements.ExpandableChoice;
 import de.codeshelf.consoleui.elements.items.ConsoleUIItemIF;
 import de.codeshelf.consoleui.elements.items.impl.ChoiceItem;
-import de.codeshelf.consoleui.prompt.reader.ReaderIF;
+import de.codeshelf.consoleui.prompt.reader.Reader;
 import de.codeshelf.consoleui.prompt.renderer.CUIRenderer;
 import org.fusesource.jansi.Ansi;
 
@@ -105,17 +105,17 @@ public class ExpandableChoicePrompt extends AbstractListablePrompt implements Pr
     reader.addAllowedPrintableKey('h');
     promptString += "h";
 
-    reader.addAllowedSpecialKey(ReaderIF.SpecialKey.ENTER);
-    reader.addAllowedSpecialKey(ReaderIF.SpecialKey.BACKSPACE);
+    reader.addAllowedSpecialKey(Reader.SpecialKey.ENTER);
+    reader.addAllowedSpecialKey(Reader.SpecialKey.BACKSPACE);
     renderState = RenderState.FOLDED;
 
     // first render call, we don't need to position the cursor up
     renderHeight = 1;
     render();
 
-    ReaderIF.ReaderInput readerInput = this.reader.read();
+    Reader.ReaderInput readerInput = this.reader.read();
     while (true) {
-      if (readerInput.getSpecialKey() == ReaderIF.SpecialKey.ENTER) {
+      if (readerInput.getSpecialKey() == Reader.SpecialKey.ENTER) {
         // if ENTER pressed
         if (chosenItem != null && chosenItem.getKey() == 'h') {
           renderState = RenderState.EXPANDED;
@@ -124,8 +124,8 @@ public class ExpandableChoicePrompt extends AbstractListablePrompt implements Pr
 
           selectedItemIndex = getFirstSelectableItemIndex();
           render();
-          reader.addAllowedSpecialKey(ReaderIF.SpecialKey.UP);
-          reader.addAllowedSpecialKey(ReaderIF.SpecialKey.DOWN);
+          reader.addAllowedSpecialKey(Reader.SpecialKey.UP);
+          reader.addAllowedSpecialKey(Reader.SpecialKey.DOWN);
 
           readerInput = this.reader.read();
         } else {
@@ -142,14 +142,14 @@ public class ExpandableChoicePrompt extends AbstractListablePrompt implements Pr
             return new ExpandableChoiceResult(defaultItem.getName());
           }
         }
-      } else if (readerInput.getSpecialKey() == ReaderIF.SpecialKey.UP) {
+      } else if (readerInput.getSpecialKey() == Reader.SpecialKey.UP) {
         selectedItemIndex = getPreviousSelectableItemIndex();
         chosenItem = (ChoiceItem) itemList.get(selectedItemIndex);
-      } else if (readerInput.getSpecialKey() == ReaderIF.SpecialKey.DOWN) {
+      } else if (readerInput.getSpecialKey() == Reader.SpecialKey.DOWN) {
         selectedItemIndex = getNextSelectableItemIndex();
         chosenItem = (ChoiceItem) itemList.get(selectedItemIndex);
       }
-      if (readerInput.getSpecialKey() == ReaderIF.SpecialKey.PRINTABLE_KEY) {
+      if (readerInput.getSpecialKey() == Reader.SpecialKey.PRINTABLE_KEY) {
         Character pressedKey = readerInput.getPrintableKey();
         if (promptString.toLowerCase().contains("" + pressedKey)) {
           // find the new chosen item

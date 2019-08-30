@@ -3,10 +3,9 @@ package de.codeshelf.consoleui.prompt;
 import de.codeshelf.consoleui.elements.ConfirmChoice;
 import de.codeshelf.consoleui.elements.PromptableElementIF;
 import de.codeshelf.consoleui.prompt.builder.PromptBuilder;
-import jline.console.completer.StringsCompleter;
+import org.jline.reader.impl.completer.StringsCompleter;
 import org.junit.Test;
 
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;

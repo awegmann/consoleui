@@ -2,7 +2,7 @@ package de.codeshelf.consoleui.prompt;
 
 import de.codeshelf.consoleui.elements.InputValue;
 import de.codeshelf.consoleui.prompt.reader.ConsoleReaderImpl;
-import de.codeshelf.consoleui.prompt.reader.ReaderIF;
+import de.codeshelf.consoleui.prompt.reader.Reader;
 import de.codeshelf.consoleui.prompt.renderer.CUIRenderer;
 import org.jline.reader.Completer;
 
@@ -22,7 +22,7 @@ import static org.fusesource.jansi.Ansi.ansi;
 public class InputPrompt extends AbstractPrompt implements PromptIF<InputValue,InputResult> {
 
   private InputValue inputElement;
-  private ReaderIF reader;
+  private Reader reader;
   CUIRenderer itemRenderer = CUIRenderer.getRenderer();
 
   public InputPrompt() throws IOException {
@@ -47,7 +47,7 @@ public class InputPrompt extends AbstractPrompt implements PromptIF<InputValue,I
     //System.out.flush();
     List<Completer> completer = inputElement.getCompleter();
     Character mask = inputElement.getMask();
-    ReaderIF.ReaderInput readerInput = reader.readLine(completer,prompt,inputElement.getValue(),mask);
+    Reader.ReaderInput readerInput = reader.readLine(completer,prompt,inputElement.getValue(),mask);
 
     String lineInput = readerInput.getLineInput();
 

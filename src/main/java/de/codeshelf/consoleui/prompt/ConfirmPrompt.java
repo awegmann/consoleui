@@ -2,7 +2,7 @@ package de.codeshelf.consoleui.prompt;
 
 import de.codeshelf.consoleui.elements.ConfirmChoice;
 import de.codeshelf.consoleui.prompt.reader.ConsoleReaderImpl;
-import de.codeshelf.consoleui.prompt.reader.ReaderIF;
+import de.codeshelf.consoleui.prompt.reader.Reader;
 import de.codeshelf.consoleui.prompt.renderer.CUIRenderer;
 
 import java.io.IOException;
@@ -18,7 +18,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  */
 public class ConfirmPrompt extends AbstractPrompt implements PromptIF<ConfirmChoice, ConfirmResult> {
 
-  private ReaderIF reader;
+  private Reader reader;
   CUIRenderer itemRenderer = CUIRenderer.getRenderer();
   private ConfirmChoice confirmChoice;
   char yes_key;
@@ -63,13 +63,13 @@ public class ConfirmPrompt extends AbstractPrompt implements PromptIF<ConfirmCho
 
     this.reader.addAllowedPrintableKey(no_key);
     this.reader.addAllowedPrintableKey(yes_key);
-    this.reader.addAllowedSpecialKey(ReaderIF.SpecialKey.ENTER);
-    this.reader.addAllowedSpecialKey(ReaderIF.SpecialKey.BACKSPACE);
+    this.reader.addAllowedSpecialKey(Reader.SpecialKey.ENTER);
+    this.reader.addAllowedSpecialKey(Reader.SpecialKey.BACKSPACE);
 
     render();
-    ReaderIF.ReaderInput readerInput = this.reader.read();
+    Reader.ReaderInput readerInput = this.reader.read();
     while (true) {
-      if (readerInput.getSpecialKey() == ReaderIF.SpecialKey.ENTER) {
+      if (readerInput.getSpecialKey() == Reader.SpecialKey.ENTER) {
         if (givenAnswer != null) {
           break;
         } else if (confirmChoice.getDefaultConfirmation() != null) {
@@ -77,13 +77,13 @@ public class ConfirmPrompt extends AbstractPrompt implements PromptIF<ConfirmCho
           break;
         }
       }
-      if (readerInput.getSpecialKey() == ReaderIF.SpecialKey.PRINTABLE_KEY) {
+      if (readerInput.getSpecialKey() == Reader.SpecialKey.PRINTABLE_KEY) {
         if (readerInput.getPrintableKey().equals(yes_key)) {
           givenAnswer = ConfirmChoice.ConfirmationValue.YES;
         } else if (readerInput.getPrintableKey().equals(no_key)) {
           givenAnswer = ConfirmChoice.ConfirmationValue.NO;
         }
-      } else if (readerInput.getSpecialKey() == ReaderIF.SpecialKey.BACKSPACE) {
+      } else if (readerInput.getSpecialKey() == Reader.SpecialKey.BACKSPACE) {
         givenAnswer = null;
       }
       render();

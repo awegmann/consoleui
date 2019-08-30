@@ -1,38 +1,39 @@
 package de.codeshelf.consoleui.prompt.reader;
 
+import org.jline.keymap.BindingReader;
 import org.jline.keymap.KeyMap;
-import org.jline.reader.Binding;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.impl.LineReaderImpl;
+import org.jline.terminal.Attributes;
 import org.jline.terminal.Terminal;
-import org.jline.utils.DiffHelper;
+import org.jline.terminal.TerminalBuilder;
+import org.jline.utils.InfoCmp;
+import org.jline.utils.NonBlockingReader;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 
 /**
+ * Implementation of Reader with jline.
+ * <p>
  * User: Andreas Wegmann
  * Date: 02.01.16
  */
-public class ConsoleReaderImpl implements ReaderIF {
-  LineReaderImpl console;
+public class ConsoleReaderImpl implements Reader {
+  LineReader console;
 
   private Set<SpecialKey> allowedSpecialKeys;
   private Set<Character> allowedPrintableKeys;
+  private KeyMap map;
+
 
   public ConsoleReaderImpl() throws IOException {
-    allowedPrintableKeys = new HashSet<Character>();
-    allowedSpecialKeys = new HashSet<SpecialKey>();
-
-    //console = new LineReader();
-
-    LineReader lineReader = LineReaderBuilder.builder()
-            .build();
+    allowedPrintableKeys = new HashSet<>();
+    allowedSpecialKeys = new HashSet<>();
   }
 
   public void setAllowedSpecialKeys(Set<SpecialKey> allowedSpecialKeys) {
@@ -53,65 +54,65 @@ public class ConsoleReaderImpl implements ReaderIF {
     this.allowedSpecialKeys.add(specialKey);
   }
 
-  public ReaderInput read() {
-    Object op;
+  public ReaderInput read() throws IOException {
+    Terminal terminal = null;
+    Attributes attributes = null;
 
-    StringBuilder sb = new StringBuilder();
-    Stack<Character> pushBackChar = new Stack<Character>();
     try {
-      while (true) {
-        /*
-        int c = pushBackChar.isEmpty() ? console.readCharacter() : pushBackChar.pop ();
-        if (c == -1) {
-            return null;
-        }
-        sb.appendCodePoint(c);
-        */
-        KeyMap<Binding> keys= new KeyMap<Binding>();
-        Binding binding = console.readBinding(keys);
-        //op = console.getKeys().getBound( sb );
-        if (binding instanceof Binding) {
-          DiffHelper.Operation operation = (DiffHelper.Operation) op;
-          if ((binding == LineReader.UP_HISTORY) && this.allowedSpecialKeys.contains(SpecialKey.DOWN))
-            return new ReaderInput(SpecialKey.DOWN);
-          if (operation == LineReader.DOWN_HISTORY && this.allowedSpecialKeys.contains(SpecialKey.UP))
-            return new ReaderInput(SpecialKey.UP);
-          if (operation == LineReader.ACCEPT_LINE && this.allowedSpecialKeys.contains(SpecialKey.ENTER))
-            return new ReaderInput(SpecialKey.ENTER);
-          if (operation == LineReader.BACKWARD_CHAR && this.allowedSpecialKeys.contains(SpecialKey.BACKSPACE))
-            return new ReaderInput(SpecialKey.BACKSPACE);
+      KeyMap map = new KeyMap();
+      terminal = TerminalBuilder.terminal();
+      attributes = terminal.enterRawMode();
 
-          if (operation == LineReader.SELF_INSERT) {
-            String lastBinding = sb.toString();
-            Character cc = lastBinding.charAt(0);
-            if (allowedPrintableKeys.contains(cc)) {
-              return new ReaderInput(SpecialKey.PRINTABLE_KEY, cc);
-            } else {
-              sb = new StringBuilder();
-            }
-          }
+      for (SpecialKey key : allowedSpecialKeys) {
+        switch (key) {
+          case UP:
+            map.bind(new ReaderInput(SpecialKey.UP), map.key( terminal, InfoCmp.Capability.key_up));
+            break;
+          case DOWN:
+            map.bind(new ReaderInput(SpecialKey.DOWN), map.key( terminal, InfoCmp.Capability.key_down));
+            break;
+          case BACKSPACE:
+            map.bind(new ReaderInput(SpecialKey.BACKSPACE), map.key( terminal, InfoCmp.Capability.back_tab));
+            break;
+          case ENTER:
+            map.bind(new ReaderInput(SpecialKey.ENTER), map.key( terminal, InfoCmp.Capability.key_enter));
+            break;
         }
       }
-    } catch (IOException e) {
-      e.printStackTrace();
+
+      for (Character key : allowedPrintableKeys) {
+        map.bind(new ReaderInput(SpecialKey.PRINTABLE_KEY, key), Character.toString(key));
+      }
+
+      NonBlockingReader nonBlockingReader = terminal.reader();
+      BindingReader bindingReader = new BindingReader(nonBlockingReader);
+
+      return (ReaderInput) bindingReader.readBinding(map);
+    } finally {
+      if (terminal != null && attributes != null)
+        terminal.setAttributes(attributes);
+
     }
-    return null;
   }
 
   /**
    * Wrapper around JLine 2 library.
    *
    * @param completer List of completes to use
-   * @param prompt the text to display as prompt left side from the input
-   * @param mask optional mask character (may be used for password entry)
+   * @param prompt    the text to display as prompt left side from the input
+   * @param mask      optional mask character (may be used for password entry)
    * @return a ReaderInput object with results
    */
   public ReaderInput readLine(List<Completer> completer, String prompt, String value, Character mask) throws IOException {
+
+    LineReaderBuilder builder = LineReaderBuilder.builder();
+
     if (completer != null) {
       for (Completer c : completer) {
-        console.setCompleter(c);
+        builder.completer(c);
       }
     }
+    console = builder.build();
     String readLine;
     if (mask == null) {
       readLine = console.readLine(prompt);

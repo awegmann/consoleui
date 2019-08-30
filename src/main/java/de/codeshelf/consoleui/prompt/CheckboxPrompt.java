@@ -3,7 +3,7 @@ package de.codeshelf.consoleui.prompt;
 import de.codeshelf.consoleui.elements.Checkbox;
 import de.codeshelf.consoleui.elements.items.ConsoleUIItemIF;
 import de.codeshelf.consoleui.elements.items.impl.CheckboxItem;
-import de.codeshelf.consoleui.prompt.reader.ReaderIF;
+import de.codeshelf.consoleui.prompt.reader.Reader;
 import de.codeshelf.consoleui.prompt.renderer.CUIRenderer;
 import org.fusesource.jansi.Ansi;
 
@@ -68,16 +68,16 @@ public class CheckboxPrompt extends AbstractListablePrompt implements PromptIF<C
     this.reader.addAllowedPrintableKey('j');
     this.reader.addAllowedPrintableKey('k');
     this.reader.addAllowedPrintableKey(' ');
-    this.reader.addAllowedSpecialKey(ReaderIF.SpecialKey.DOWN);
-    this.reader.addAllowedSpecialKey(ReaderIF.SpecialKey.UP);
-    this.reader.addAllowedSpecialKey(ReaderIF.SpecialKey.ENTER);
+    this.reader.addAllowedSpecialKey(Reader.SpecialKey.DOWN);
+    this.reader.addAllowedSpecialKey(Reader.SpecialKey.UP);
+    this.reader.addAllowedSpecialKey(Reader.SpecialKey.ENTER);
 
     this.selectedItemIndex = getFirstSelectableItemIndex();
 
     render();
-    ReaderIF.ReaderInput readerInput = this.reader.read();
-    while (readerInput.getSpecialKey() != ReaderIF.SpecialKey.ENTER) {
-      if (readerInput.getSpecialKey() == ReaderIF.SpecialKey.PRINTABLE_KEY) {
+    Reader.ReaderInput readerInput = this.reader.read();
+    while (readerInput.getSpecialKey() != Reader.SpecialKey.ENTER) {
+      if (readerInput.getSpecialKey() == Reader.SpecialKey.PRINTABLE_KEY) {
         if (readerInput.getPrintableKey().equals(' ')) {
           toggleSelection();
         } else if (readerInput.getPrintableKey().equals('j')) {
@@ -85,9 +85,9 @@ public class CheckboxPrompt extends AbstractListablePrompt implements PromptIF<C
         } else if (readerInput.getPrintableKey().equals('k')) {
           this.selectedItemIndex = getPreviousSelectableItemIndex();
         }
-      } else if (readerInput.getSpecialKey() == ReaderIF.SpecialKey.DOWN) {
+      } else if (readerInput.getSpecialKey() == Reader.SpecialKey.DOWN) {
         this.selectedItemIndex = getNextSelectableItemIndex();
-      } else if (readerInput.getSpecialKey() == ReaderIF.SpecialKey.UP) {
+      } else if (readerInput.getSpecialKey() == Reader.SpecialKey.UP) {
         this.selectedItemIndex = getPreviousSelectableItemIndex();
       }
       render();

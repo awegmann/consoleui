@@ -4,8 +4,8 @@ import de.codeshelf.consoleui.elements.Checkbox;
 import de.codeshelf.consoleui.elements.items.CheckboxItemIF;
 import de.codeshelf.consoleui.elements.items.impl.CheckboxItem;
 import de.codeshelf.consoleui.elements.items.impl.Separator;
-import de.codeshelf.consoleui.prompt.reader.ReaderIF;
-import jline.console.completer.Completer;
+import de.codeshelf.consoleui.prompt.reader.Reader;
+import org.jline.reader.Completer;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class CheckboxPromptTest {
     list.add(new CheckboxItem("Four"));
     list.add(new CheckboxItem(true,"Five"));
 
-    checkboxPrompt.setReader(new ReaderIF() {
+    checkboxPrompt.setReader(new Reader() {
       public void setAllowedSpecialKeys(Set<SpecialKey> allowedSpecialKeys) {
 
       }

@@ -1,7 +1,7 @@
 package de.codeshelf.consoleui.prompt;
 
 import de.codeshelf.consoleui.prompt.reader.ConsoleReaderImpl;
-import de.codeshelf.consoleui.prompt.reader.ReaderIF;
+import de.codeshelf.consoleui.prompt.reader.Reader;
 import org.fusesource.jansi.Ansi;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ public abstract class AbstractPrompt {
   protected ResourceBundle resourceBundle;
 
   // the reader where we get the user input from
-  ReaderIF reader;
+  Reader reader;
 
   /**
    * Generic method to render the message prompt and the users input after the prompt. This method is
@@ -30,7 +30,8 @@ public abstract class AbstractPrompt {
    * @param resultValue result value generated from the prompt implementation
    */
   protected void renderMessagePromptAndResult(String message, String resultValue) {
-    System.out.println(ansi().cursorUp(renderHeight - 1).a(renderMessagePrompt(message)).fg(Ansi.Color.CYAN).a(" " + resultValue).eraseScreen(Ansi.Erase.FORWARD).reset());
+    System.out.println(ansi().cursorUp(renderHeight - 1).a(renderMessagePrompt(message)).fg(Ansi.Color.CYAN).
+            a(" " + resultValue).eraseScreen(Ansi.Erase.FORWARD).reset());
   }
 
   /**
@@ -61,7 +62,7 @@ public abstract class AbstractPrompt {
    *
    * @param reader reader implementation to use.
    */
-  public void setReader(ReaderIF reader) {
+  public void setReader(Reader reader) {
     this.reader = reader;
   }
 }
