@@ -4,14 +4,8 @@ buildscript {
       url 'https://plugins.gradle.org/m2/'
     }
   }
-  dependencies {
-    classpath 'net.researchgate:gradle-release:2.3.4'
-  }
 }
 
-apply plugin: 'net.researchgate.release'
-
-ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 apply plugin: 'java'
 apply plugin: 'idea'
@@ -23,21 +17,19 @@ repositories {
 }
 
 compileJava {
-  sourceCompatibility = 1.6
-  targetCompatibility = 1.6
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
 }
 
-
-task wrapper(type: Wrapper) {
-  gradleVersion = '2.11'
-}
 
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile 'org.fusesource.jansi:jansi:1.11'
     //compile 'jline:jline:2.12'
-    compile 'org.jline:jline:3.1.2'
+  compile group: 'org.jline', name: 'jline', version: '3.12.1'
+  compile group: 'org.jline', name: 'jline-terminal-jansi', version: '3.12.1'
+  compile group: 'org.jline', name: 'jline-terminal-jna', version: '3.12.1'
 }
 
 task javadocJar(type: Jar) {
@@ -53,17 +45,18 @@ task sourcesJar(type: Jar) {
 
 // Fat-jar
 task fatJar(type: Jar, dependsOn: [':compileJava', ':processResources']) {
-  from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-  from files(sourceSets.main.output.classesDir)
-  from files(sourceSets.main.resources)
-  baseName = project.name + '-all'
   manifest {
-      attributes 'Implementation-Title': 'ConsoleUI',
-                 'Implementation-Version': version,
-                 'Main-Class': 'de.codeshelf.consoleui.Basic'
+    attributes 'Implementation-Title': 'ConsoleUI',
+            'Implementation-Version': version,
+            'Main-Class': 'de.codeshelf.consoleui.Basic'
 
-    }
+  }
+
+  baseName = project.name + '-all'
+  from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+  with jar
 }
+
 
 task printEnv {
   println "username "+sonatypeUsername
@@ -75,7 +68,8 @@ artifacts {
 
 
 signing {
-  required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
+  //
+  // required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
 
   sign configurations.archives
 }
@@ -87,6 +81,7 @@ if (project.hasProperty('release')) {
   uploadArchives {
     repositories {
       mavenDeployer {
+
         beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
         /* just for testing
         repository(url: "file://localhost/${rootDir}/../myRepo/")
