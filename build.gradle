@@ -4,12 +4,7 @@ buildscript {
       url 'https://plugins.gradle.org/m2/'
     }
   }
-  dependencies {
-    classpath 'net.researchgate:gradle-release:2.3.4'
   }
-}
-
-apply plugin: 'net.researchgate.release'
 
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
@@ -23,21 +18,19 @@ repositories {
 }
 
 compileJava {
-  sourceCompatibility = 1.6
-  targetCompatibility = 1.6
-}
-
-
-task wrapper(type: Wrapper) {
-  gradleVersion = '2.11'
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
 }
 
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile 'org.fusesource.jansi:jansi:1.11'
-    //compile 'jline:jline:2.12'
-    compile 'org.jline:jline:3.1.2'
+    compile 'org.jline:jline:3.13.3'
+}
+
+javadoc {
+    options.encoding = 'UTF-8'
 }
 
 task javadocJar(type: Jar) {
@@ -54,8 +47,8 @@ task sourcesJar(type: Jar) {
 // Fat-jar
 task fatJar(type: Jar, dependsOn: [':compileJava', ':processResources']) {
   from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-  from files(sourceSets.main.output.classesDir)
-  from files(sourceSets.main.resources)
+  from sourceSets.main.output.classesDirs
+  from sourceSets.main.output.resourcesDir
   baseName = project.name + '-all'
   manifest {
       attributes 'Implementation-Title': 'ConsoleUI',
