@@ -30,6 +30,11 @@ dependencies {
   compile group: 'org.jline', name: 'jline', version: '3.12.1'
   compile group: 'org.jline', name: 'jline-terminal-jansi', version: '3.12.1'
   compile group: 'org.jline', name: 'jline-terminal-jna', version: '3.12.1'
+    compile 'org.jline:jline:3.13.3'
+}
+
+javadoc {
+    options.encoding = 'UTF-8'
 }
 
 task javadocJar(type: Jar) {
@@ -45,18 +50,17 @@ task sourcesJar(type: Jar) {
 
 // Fat-jar
 task fatJar(type: Jar, dependsOn: [':compileJava', ':processResources']) {
-  manifest {
-    attributes 'Implementation-Title': 'ConsoleUI',
-            'Implementation-Version': version,
-            'Main-Class': 'de.codeshelf.consoleui.Basic'
-
-  }
-
-  baseName = project.name + '-all'
   from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-  with jar
-}
+  from sourceSets.main.output.classesDirs
+  from sourceSets.main.output.resourcesDir
+  baseName = project.name + '-all'
+  manifest {
+      attributes 'Implementation-Title': 'ConsoleUI',
+                 'Implementation-Version': version,
+                 'Main-Class': 'de.codeshelf.consoleui.Basic'
 
+    }
+}
 
 task printEnv {
   println "username "+sonatypeUsername
@@ -81,7 +85,6 @@ if (project.hasProperty('release')) {
   uploadArchives {
     repositories {
       mavenDeployer {
-
         beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
         /* just for testing
         repository(url: "file://localhost/${rootDir}/../myRepo/")
