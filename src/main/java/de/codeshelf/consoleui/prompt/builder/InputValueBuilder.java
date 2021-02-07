@@ -1,9 +1,7 @@
 package de.codeshelf.consoleui.prompt.builder;
 
 import de.codeshelf.consoleui.elements.InputValue;
-import jline.console.completer.Completer;
-
-import java.util.ArrayList;
+import org.jline.reader.Completer;
 
 /**
  * Created by andy on 22.01.16.
@@ -14,7 +12,7 @@ public class InputValueBuilder {
   private String defaultValue;
   private String message;
   private Character mask;
-  private ArrayList<Completer> completers;
+  private Completer completer;
 
   public InputValueBuilder(PromptBuilder promptBuilder) {
     this.promptBuilder = promptBuilder;
@@ -35,14 +33,6 @@ public class InputValueBuilder {
     return this;
   }
 
-  public InputValueBuilder addCompleter(Completer completer) {
-    if (completers == null) {
-      completers = new ArrayList<Completer>();
-    }
-    this.completers.add(completer);
-    return this;
-  }
-
   public InputValueBuilder mask(char mask) {
     this.mask = mask;
     return this;
@@ -50,14 +40,18 @@ public class InputValueBuilder {
 
   public PromptBuilder addPrompt() {
     InputValue inputValue = new InputValue(name, message, null, defaultValue);
-    if (completers != null) {
-      inputValue.setCompleter(completers);
-    }
     if (mask != null) {
       inputValue.setMask(mask);
+    }
+    if (completer != null) {
+      inputValue.setCompleter(completer);
     }
     promptBuilder.addPrompt(inputValue);
     return promptBuilder;
   }
 
+  public InputValueBuilder addCompleter(Completer completer) {
+    this.completer = completer;
+    return this;
+  }
 }
