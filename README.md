@@ -9,6 +9,11 @@
 Tiny java library that provides simple UI elements on ANSI console based terminals. ConsoleUI is inspired by 
 [Inquirer.js](https://github.com/SBoudrias/Inquirer.js) which is written in JavaScript.
 
+# This repository is outdated!
+
+**Please notice, since the beginning of 2024, ConsoleUI is an official part of the jline3 library. Further development
+takes place in the repository of jline3.**
+
 # Intention
 
 I was impressed by JavaScript based Yeoman which leads the user through the process of creating new projects
