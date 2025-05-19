@@ -41,7 +41,7 @@ public abstract class AbstractPrompt {
    * @return String with ANSI-Color printable prompt.
    */
   protected String renderMessagePrompt(String message) {
-    return (ansi().fg(Ansi.Color.GREEN).a("? ").fgBright(Ansi.Color.WHITE).a(message)).fg(Ansi.Color.DEFAULT).toString();
+    return (ansi().fg(Ansi.Color.GREEN).a("? ").fg(Ansi.Color.DEFAULT).a(message)).fg(Ansi.Color.DEFAULT).toString();
   }
 
   /**
